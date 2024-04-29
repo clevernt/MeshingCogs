@@ -1,9 +1,8 @@
 import twitchio
 
 from typing import Optional
-
 from twitchio.ext import commands
-from utils.sql import Database
+from utils.mongo import Database
 
 
 class Points(commands.Cog):
@@ -11,77 +10,30 @@ class Points(commands.Cog):
         self.bot = bot
         self.database = Database()
 
-    @commands.command(aliases=["point", "points"])
+    @commands.command(name="points")
     async def get_points(
         self, ctx: commands.Context, user: Optional[twitchio.PartialChatter] = None
     ) -> None:
-        if user is None:
-            user = ctx.author
-        points = self.database.get_points(user_id=user.id)
-        await ctx.send(f"/me You have {points} points.")
-
-    @commands.command(aliases=["addpoint", "addpoints"])
-    async def add_points(self, ctx: commands.Context, user: str, amount: int):
-        if not ctx.message.author.is_mod:
-            return
-
-        if amount <= 0:
-            await ctx.send("/me You must provide an amount")
-            return
-
-        if user_object := await self.bot.fetch_users(names=[user]):
-            self.database.add_points(user_id=user_object[0].id, amount=amount)
-            await ctx.send(f"/me Added {amount} points to {user}")
+        if user:
+            points = self.database.get_points(
+                user_id=int((await user.user()).id), username=user.name
+            )
+            await ctx.reply(
+                f"/me @{ctx.author.name} -> {user.name} has {points} points."
+            )
         else:
-            await ctx.send("/me User not found")
-
-    @commands.command(aliases=["removepoints", "deletepoints", "subtractpoints"])
-    async def remove_points(self, ctx: commands.Context, user: str, amount: int):
-        if not ctx.message.author.is_mod:
-            return
-
-        if amount <= 0:
-            await ctx.send("/me You must provide an amount")
-            return
-
-        if user_object := await self.bot.fetch_users(names=[user]):
-            self.database.remove_points(user_id=user_object[0].id, amount=amount)
-            await ctx.send(f"/me Subtracted {amount} points from {user}")
-        else:
-            await ctx.send("/me User not found")
-
-    @commands.command(name="setpoints")
-    async def set_points(self, ctx: commands.Context, user: str, amount: int):
-        if not ctx.message.author.is_mod:
-            return
-
-        if amount < 0:
-            await ctx.send("/me Amount must be higher than zero")
-            return
-
-        if user_object := await self.bot.fetch_users(names=[user]):
-            self.database.set_points(user_id=user_object[0].id, amount=amount)
-            await ctx.send(f"/me Set {user}'s points to {amount}")
-        else:
-            await ctx.send("/me User not found")
+            points = self.database.get_points(
+                user_id=int(ctx.author.id), username=ctx.author.name
+            )
+            await ctx.reply(f"/me @{ctx.author.name} -> You have {points} points.")
 
     @commands.command(aliases=["lb", "repostlb"])
     async def leaderboard(self, ctx: commands.Context):
-        leaderboard = self.database.get_leaderboard()
-        usernames = [
-            user.name
-            for user in await self.bot.fetch_users(
-                ids=[user[0] for user in leaderboard]
-            )
+        lb = self.database.get_leaderboard()
+        formatted_lb = [
+            f"#{i+1}: {user['username']}_{user['points']}" for i, user in enumerate(lb)
         ]
-        formatted_leaderboard = [
-            (username, user[1]) for username, user in zip(usernames, leaderboard)
-        ]
-        leaderboard_string = ""
-        for rank, (username, points) in enumerate(formatted_leaderboard, start=1):
-            leaderboard_string += f"{rank}. {username}_{points} points\n"
-
-        await ctx.send(f"/me {leaderboard_string}")
+        await ctx.reply(f"/me @{ctx.author.name} -> {", ".join(formatted_lb)}")
 
 
 def prepare(bot: commands.Bot):

@@ -2,7 +2,7 @@ import twitchio
 
 from twitchio.ext import commands
 from utils.tweet import get_tweet_id
-from utils.sql import Database
+from utils.mongo import Database
 
 
 class Repost(commands.Cog):
@@ -21,10 +21,15 @@ class Repost(commands.Cog):
             return
 
         if self.database.check_repost(tweet_id=tweet_id):
-            self.database.add_points(user_id=message.author.id, amount=1)
+            self.database.update_points(
+                user_id=int(message.author.id),
+                username=message.author.name,
+                amount=1,
+                operation="add",
+            )
             await message.channel.send("/me that's a repost")
         else:
-            self.database.add_tweet_to_db(tweet_id=tweet_id)
+            self.database.add_tweet(tweet_id=tweet_id)
 
 
 def prepare(bot: commands.Bot):

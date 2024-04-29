@@ -5,11 +5,10 @@ from twitchio.ext.commands.errors import (
     BadArgument,
     CommandNotFound,
     MissingRequiredArgument,
-    CommandOnCooldown,
 )
 
 TOKEN: str | None = os.getenv(key="TOKEN")
-COGS: list[str] = ["points", "repost", "art"]
+COGS: list[str] = ["points", "repost", "art", "codes"]
 
 
 class MyBot(commands.Bot):
@@ -24,13 +23,16 @@ class MyBot(commands.Bot):
     async def event_command_error(self, context: commands.Context, error: Exception):
         if isinstance(error, CommandNotFound):
             return
-        if isinstance(error, MissingRequiredArgument):
-            await context.send(f"/me Error occurred: {error}")
-        if isinstance(error, BadArgument):
-            await context.send(f"/me Error occurred: {error}")
-        if isinstance(error, CommandOnCooldown):
-            await context.send(f"/me Command is on cooldown...")
+        elif isinstance(error, MissingRequiredArgument):
+            await context.send(f"/me {error}")
+        elif isinstance(error, BadArgument):
+            await context.send(f"/me {error}")
+        else:
+            print(error)
 
 
-bot = MyBot(token=TOKEN, prefix="!", initial_channels=["clevernt_"])
+bot = MyBot(
+    token=TOKEN, prefix="!", initial_channels=["defendium", "botvuen", "clevernt_"]
+)
+
 bot.run()

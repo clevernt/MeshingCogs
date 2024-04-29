@@ -1,11 +1,10 @@
 import twitchio
-
-from typing import Optional
+import re
 
 from twitchio.ext import commands
-from utils.tweet import get_tweet_id
-from utils.art import get_mentions
-from utils.sql import Database
+from utils.tweet import get_tweet_link
+from utils.mongo import Database
+from typing import Optional
 
 
 class Art(commands.Cog):
@@ -15,50 +14,90 @@ class Art(commands.Cog):
 
     @commands.Cog.event()
     async def event_message(self, message: twitchio.Message):
-        if (message.echo) or (message.author.name == "streamelements"):
+        if message.echo or message.author.name.lower() == "streamelements":
             return
 
-        tweet_id = get_tweet_id(message=message.content)
+        tweet_link = get_tweet_link(message=message.content)
 
-        if not tweet_id:
+        if not tweet_link:
             return
 
-        if self.database.check_repost(tweet_id=tweet_id):
-            return
+        mentions = re.findall(r"@(\w+)", message.content)
 
-        # TODO
-        # if mentions := get_mentions(message=message.content):
-        # if askers := self.database.does_anyone_care(mentions):
-        # await message.channel.send(self.database.ping_message(mentions, askers))
+        if mentions:
+            interested_users = [
+                user
+                for mention in mentions
+                if (users := self.database.find_askers(mention))
+                for user in users
+            ]
+            mentioned_characters = [
+                mention for mention in mentions if self.database.find_askers(mention)
+            ]
+
+            if interested_users:
+                interested_users_str = ", ".join(
+                    f"@{user}" for user in interested_users
+                )
+                mentioned_characters_str = ", ".join(mentioned_characters)
+                botvuen = self.bot.get_channel("botvuen")
+                await botvuen.send(
+                    f"/me {interested_users_str} DinkDonk {mentioned_characters_str} art posted!! {tweet_link}"
+                )
+
+    @commands.command(name="addcharacter", aliases=["addcharacters"])
+    async def add_characters(self, ctx: commands.Context, *, characters: str) -> None:
+        self.database.add_characters(
+            characters.replace(",", "").split(), ctx.author.id, ctx.author.name
+        )
+        await ctx.reply(f"/me {ctx.author.name} -> Updated your characters.")
 
     @commands.command(
-        aliases=[
-            "removecharacter",
-            "deletecharacter",
-            "removecharacters",
-            "deletecharacters",
-        ]
+        name="removecharacter",
+        aliases=["removecharacters", "deletecharacter", "deletecharacters"],
     )
-    async def remove_character(self, ctx: commands.Context, *, characters: str) -> None:
-        success = self.database.remove_characters(
-            user_id=ctx.author.id, new_characters=characters
+    async def remove_characters(
+        self, ctx: commands.Context, *, characters: str
+    ) -> None:
+        self.database.remove_characters(
+            characters.replace(",", "").split(), ctx.author.id, ctx.author.name
         )
-
-    @commands.command(aliases=["addcharacter", "addcharacters"])
-    async def add_character(self, ctx: commands.Context, *, characters: str) -> None:
-        self.database.add_characters(user_id=ctx.author.id, new_characters=characters)
+        await ctx.reply(f"/me {ctx.author.name} -> Updated your characters.")
 
     @commands.command(name="characters")
     async def get_characters(
-        self, ctx: commands.Context, user: Optional[twitchio.PartialChatter] = None
+        self,
+        ctx: commands.Context,
+        target_user: Optional[twitchio.PartialChatter] = None,
     ) -> None:
-        if user is None:
-            user = ctx.author
-        characters = self.database.get_characters(user_id=user.id)
-        if characters:
-            await ctx.send(f"/me {", ".join(characters)}")
+        if target_user:
+            user_id = int((await target_user.user()).id)
+            username = target_user.name
         else:
-            await ctx.send("/me You do not have any characters")
+            user_id = int(ctx.author.id)
+            username = ctx.author.name
+
+        characters = self.database.get_characters(user_id=user_id, username=username)
+
+        if not characters:
+            if target_user:
+                await ctx.reply(
+                    f"/me @{ctx.author.name} -> {target_user.name} has no characters added."
+                )
+            else:
+                await ctx.reply(
+                    f"/me @{ctx.author.name} -> You don't have characters added."
+                )
+            return
+
+        if target_user:
+            await ctx.reply(
+                f"/me @{ctx.author.name} -> {target_user.name}'s characters: {', '.join(characters)}"
+            )
+        else:
+            await ctx.reply(
+                f"/me @{ctx.author.name} -> Your characters: {', '.join(characters)}"
+            )
 
 
 def prepare(bot: commands.Bot):
