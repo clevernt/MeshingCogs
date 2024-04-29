@@ -33,7 +33,7 @@ class Points(commands.Cog):
         formatted_lb = [
             f"#{i+1}: {user['username']}_{user['points']}" for i, user in enumerate(lb)
         ]
-        await ctx.reply(f"/me @{ctx.author.name} -> {", ".join(formatted_lb)}")
+        await ctx.reply(f"/me @{ctx.author.name} -> {', '.join(formatted_lb)}")
 
 
 def prepare(bot: commands.Bot):
