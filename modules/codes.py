@@ -11,7 +11,9 @@ class Codes(commands.Cog):
     async def codes(self, ctx: commands.Context, game: str) -> None:
         input_game = game.lower()
         if input_game not in ["genshin", "hsr"]:
-            await ctx.send(f"/me @{ctx.author.name} -> Please specify a valid game (Genshin or HSR)")
+            await ctx.send(
+                f"/me @{ctx.author.name} -> Please specify a valid game (Genshin or HSR)"
+            )
             return
 
         if input_game == "hsr":
@@ -20,7 +22,9 @@ class Codes(commands.Cog):
         resp = requests.get(f"https://hoyo-codes.vercel.app/codes?game={game}")
         resp.raise_for_status()
         data = resp.json()
-        await ctx.reply(f"/me @{ctx.author.name} -> All valid {input_game} codes {', '.join([code for code in data.get("codes")])}")
+        await ctx.reply(
+            f"/me @{ctx.author.name} -> All valid {input_game} codes {', '.join([code for code in data.get('codes')])}"
+        )
 
 
 def prepare(bot: commands.Bot):
