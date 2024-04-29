@@ -7,7 +7,7 @@ from twitchio.ext.commands.errors import (
     MissingRequiredArgument,
 )
 
-TOKEN: str | None = os.getenv(key="TOKEN")
+TOKEN: str = os.getenv(key="TOKEN")
 COGS: list[str] = ["points", "repost", "art", "codes"]
 
 
