@@ -8,7 +8,7 @@ from twitchio.ext.commands.errors import (
 )
 
 TOKEN: str = os.getenv(key="TOKEN")
-COGS: list[str] = ["points", "repost", "art", "codes"]
+COGS = ["points", "repost", "art", "codes"]
 
 
 class MyBot(commands.Bot):
