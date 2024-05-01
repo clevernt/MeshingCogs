@@ -9,6 +9,12 @@ class Codes(commands.Cog):
 
     @commands.command()
     async def codes(self, ctx: commands.Context, game: str) -> None:
+        if game is None:
+            await ctx.send(
+                f"/me @{ctx.author.name} -> Please specify a game (Genshin or HSR)"
+            )
+            return
+
         input_game = game.lower()
         if input_game not in ["genshin", "hsr"]:
             await ctx.send(
