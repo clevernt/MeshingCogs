@@ -30,8 +30,9 @@ class Repost(commands.Cog):
             await message.channel.send(
                 f"/me {message.author.mention} -> ⚠️🚨 REPOST DETECTED!!! "
                 "YOU HAVE BEEN REPORTED TO THE HIGHER-UPS (WHO DON'T EXIST) "
-                f"AND YOUR TOTAL POINTS IS NOW "
+                f"AND YOU NOW HAVE "
                 f"{self.database.get_points(int(message.author.id), message.author.name)}"
+                " POINTS"
             )
         else:
             self.database.add_tweet(tweet_id=tweet_id)
