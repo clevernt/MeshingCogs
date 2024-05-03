@@ -31,7 +31,7 @@ class Repost(commands.Cog):
                 f"/me {message.author.mention} -> ⚠️🚨 REPOST DETECTED!!! "
                 "YOU HAVE BEEN REPORTED TO THE HIGHER-UPS (WHO DON'T EXIST) "
                 f"AND YOUR TOTAL POINTS IS NOW "
-                f"{self.database.get_points(message.author.id, message.author.name)}"
+                f"{self.database.get_points(int(message.author.id), message.author.name)}"
             )
         else:
             self.database.add_tweet(tweet_id=tweet_id)
