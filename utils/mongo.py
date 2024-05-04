@@ -52,12 +52,22 @@ class Database:
         return list(leaderboard)
 
     # -- Tweets --
-    def check_repost(self, tweet_id: int) -> bool:
+    def check_repost(self, tweet_id: int):
         return self.tweets.find_one({"tweet_id": int(tweet_id)}) is not None
 
-    def add_tweet(self, tweet_id: int):
+    def get_original_poster(self, tweet_id: int):
+        try:
+            return self.tweets.find_one({"tweet_id": int(tweet_id)})["author"]
+        except KeyError:
+            return None
+
+    def add_tweet(self, tweet_id: int, author_id: int):
         self.tweets.insert_one(
-            {"tweet_id": int(tweet_id), "created_at": datetime.now(tz.utc)}
+            {
+                "tweet_id": int(tweet_id),
+                "author": int(author_id),
+                "created_at": datetime.now(tz.utc),
+            }
         )
 
     # --  Characters --

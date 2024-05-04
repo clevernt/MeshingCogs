@@ -31,8 +31,6 @@ class MyBot(commands.Bot):
             print(error)
 
 
-bot = MyBot(
-    token=TOKEN, prefix="!", initial_channels=["defendium", "botvuen", "clevernt_"]
-)
+bot = MyBot(token=TOKEN, prefix="!", initial_channels=["defendium", "botvuen"])
 
 bot.run()
