@@ -37,9 +37,9 @@ class Repost(commands.Cog):
                 int(message.author.id), message.author.name
             )
 
-            blame_message = f" blame_{original_poster.name}" if original_poster else ""
+            blame_message = f"blame_{original_poster.name}" if original_poster else ""
             await message.channel.send(
-                f"/me {message.author.mention} -> ⚠️🚨 REPOST DETECTED!!!({blame_message}) "
+                f"/me {message.author.mention} -> ⚠️🚨 REPOST DETECTED!!! ({blame_message}) "
                 "YOU HAVE BEEN REPORTED TO THE HIGHER-UPS (WHO DON'T EXIST) "
                 f"AND YOU NOW HAVE {points} POINTS"
             )
