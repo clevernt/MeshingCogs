@@ -1,8 +1,9 @@
 import twitchio
 import re
+from datetime import datetime
 
 from twitchio.ext import commands
-from utils.tweet import get_tweet_link
+from utils.tweet import get_tweet_id, get_tweet_link
 from utils.mongo import Database
 from typing import Optional
 
@@ -18,14 +19,19 @@ class Art(commands.Cog):
             return
 
         tweet_link = get_tweet_link(message=message.content)
+        tweet_id = get_tweet_id(message.content)
 
-        if not tweet_link:
+        if not tweet_link or not tweet_id:
+            return
+
+        timestamp = self.database.get_tweet_timestamp(tweet_id)
+        if timestamp and (datetime.now() - timestamp).total_seconds() > 10:
             return
 
         mentions = re.findall(r"@(\w+)", message.content)
 
         if mentions:
-            interested_users = [
+            askers = [
                 user
                 for mention in mentions
                 if (users := self.database.find_askers(mention))
@@ -35,14 +41,12 @@ class Art(commands.Cog):
                 mention for mention in mentions if self.database.find_askers(mention)
             ]
 
-            if interested_users:
-                interested_users_str = ", ".join(
-                    f"@{user}" for user in interested_users
-                )
+            if askers:
+                askers_str = ", ".join(f"@{user}" for user in askers)
                 mentioned_characters_str = ", ".join(mentioned_characters)
                 botvuen = self.bot.get_channel("botvuen")
                 await botvuen.send(
-                    f"/me {interested_users_str} DinkDonk {mentioned_characters_str} art posted!! {tweet_link}"
+                    f"/me {askers_str} DinkDonk {mentioned_characters_str} art posted!! {tweet_link}"
                 )
 
     @commands.command(name="addcharacter", aliases=["addcharacters"])

@@ -5,7 +5,7 @@ regex = r"https?://(?:twitter|X|vxtwitter|fxtwitter)\.com/[A-Za-z0-9_]+/status/(
 
 def find_tweet(message: str):
     match = re.search(pattern=regex, string=message, flags=re.IGNORECASE)
-    return match if match else None
+    return match or None
 
 
 def get_tweet_id(message: str):

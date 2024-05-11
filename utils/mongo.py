@@ -52,6 +52,10 @@ class Database:
         return list(leaderboard)
 
     # -- Tweets --
+    def get_tweet_timestamp(self, tweet_id: int):
+        tweet = self.tweets.find_one({"tweet_id": int(tweet_id)})
+        return tweet["created_at"]
+
     def check_repost(self, tweet_id: int):
         return self.tweets.find_one({"tweet_id": int(tweet_id)}) is not None
 
