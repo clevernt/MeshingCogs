@@ -18,36 +18,40 @@ class Art(commands.Cog):
         if message.echo or message.author.name.lower() == "streamelements":
             return
 
-        tweet_link = get_tweet_link(message=message.content)
-        tweet_id = get_tweet_id(message.content)
-
-        if not tweet_link or not tweet_id:
-            return
-
-        timestamp = self.database.get_tweet_timestamp(tweet_id)
-        if timestamp and (datetime.now() - timestamp).total_seconds() > 10:
-            return
-
         mentions = re.findall(r"@(\w+)", message.content)
 
-        if mentions:
-            askers = [
-                user
-                for mention in mentions
-                if (users := self.database.find_askers(mention))
-                for user in users
-            ]
-            mentioned_characters = [
-                mention for mention in mentions if self.database.find_askers(mention)
-            ]
+        if message.tags.get("reply-parent-msg-body"):
+            replied_to_message = message.tags["reply-parent-msg-body"].replace(
+                "\\s", " "
+            )
+            tweet_link = get_tweet_link(replied_to_message)
+            tweet_id = get_tweet_id(replied_to_message)
+        else:
+            tweet_link = get_tweet_link(message.content)
+            tweet_id = get_tweet_id(message.content)
 
-            if askers:
-                askers_str = ", ".join(f"@{user}" for user in askers)
-                mentioned_characters_str = ", ".join(mentioned_characters)
-                botvuen = self.bot.get_channel("botvuen")
-                await botvuen.send(
-                    f"/me {askers_str} DinkDonk {mentioned_characters_str} art posted!! {tweet_link}"
-                )
+        if tweet_link and tweet_id:
+            timestamp = self.database.get_tweet_timestamp(tweet_id)
+            if not timestamp or (datetime.now() - timestamp).total_seconds() <= 10:
+                askers = [
+                    user
+                    for mention in mentions
+                    if (users := self.database.find_askers(mention))
+                    for user in users
+                ]
+                mentioned_characters = [
+                    mention
+                    for mention in mentions
+                    if self.database.find_askers(mention)
+                ]
+
+                if askers:
+                    askers_str = ", ".join(f"@{user}" for user in askers)
+                    mentioned_characters_str = ", ".join(mentioned_characters)
+                    botvuen = self.bot.get_channel("botvuen")
+                    await botvuen.send(
+                        f"/me {askers_str} DinkDonk {mentioned_characters_str} art posted!! {tweet_link}"
+                    )
 
     @commands.command(name="addcharacter", aliases=["addcharacters"])
     async def add_characters(self, ctx: commands.Context, *, characters: str) -> None:
