@@ -1,5 +1,6 @@
 import os
 
+from datetime import datetime, timezone
 from twitchio.ext import commands
 from twitchio.ext.commands.errors import (
     BadArgument,
@@ -29,6 +30,24 @@ class MyBot(commands.Bot):
             await context.send(f"/me {error}")
         else:
             print(error)
+
+    @commands.command(name="sethoswhen")
+    async def sethoswhen(self, ctx: commands.Context) -> None:
+        if ctx.channel.name.lower() == "defendium":
+            return
+
+        sethos_date = datetime(2024, 6, 5, 6, 0, 0, tzinfo=timezone.utc)
+        current_date = datetime.now(timezone.utc)
+
+        time_left = sethos_date - current_date
+
+        days = time_left.days
+        hours, remainder = divmod(time_left.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        await ctx.send(
+            f"SETHOS IS COMING OUT IN {days} days, {hours} hours, and {minutes} minutes !!!!!!!!!!!!!!!!!!!!!!!!!!"
+        )
 
 
 bot = MyBot(token=TOKEN, prefix="!", initial_channels=["defendium", "botvuen"])
