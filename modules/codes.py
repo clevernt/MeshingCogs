@@ -25,7 +25,7 @@ class Codes(commands.Cog):
         if input_game == "hsr":
             game = "hkrpg"
 
-        resp = requests.get(f"https://hoyo-codes.vercel.app/codes?game={game}")
+        resp = requests.get(f"https://hoyo-codes.seriaati.xyz/codes?game={game}")
         resp.raise_for_status()
         data = resp.json()
         await ctx.reply(
