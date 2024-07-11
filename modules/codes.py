@@ -25,7 +25,7 @@ class Codes(commands.Cog):
             )
             return
 
-        resp = requests.get(f"https://hoyo-codes.seriaati.xyz/codes?game={games_dict.get(game.lower()}")
+        resp = requests.get(f"https://hoyo-codes.seriaati.xyz/codes?game={games_dict.get(game.lower())}")
         resp.raise_for_status()
         data = resp.json()
         await ctx.reply(
