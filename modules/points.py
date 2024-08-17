@@ -27,6 +27,24 @@ class Points(commands.Cog):
             )
             await ctx.reply(f"/me @{ctx.author.name} -> You have {points} points.")
 
+    @commands.command(name="addpoints")
+    async def add_points(self, ctx: commands.Context, user: twitchio.PartialChatter, amount: int) -> None:
+        user_id = int((await user.user()).id)
+        self.database.update_points(user_id=user_id, username=user.name, amount=amount, operation="add")
+        await ctx.reply(f"/m @{ctx.author.name} -> Added {amount} point(s) to {user.name}")
+
+    @commands.command(name="removepoints")
+    async def remove_points(self, ctx: commands.Context, user: twitchio.PartialChatter, amount: int) -> None:
+        user_id = int((await user.user()).id)
+        self.database.update_points(user_id=user_id, username=user.name, amount=amount, operation="remove")
+        await ctx.reply(f"/m @{ctx.author.name} -> Removed {amount} point(s) from {user.name}")
+
+    @commands.command(name="setpoints")
+    async def set_points(self, ctx: commands.Context, user: twitchio.PartialChatter, amount: int) -> None:
+        user_id = int((await user.user()).id)
+        self.database.update_points(user_id=user_id, username=user.name, amount=amount, operation="set")
+        await ctx.reply(f"/m @{ctx.author.name} -> Set {user.name}'s points to {amount}")
+
     @commands.command(aliases=["lb", "repostlb"])
     async def leaderboard(self, ctx: commands.Context):
         lb = self.database.get_leaderboard()

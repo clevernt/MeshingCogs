@@ -1,5 +1,6 @@
 import os
 
+from dotenv import load_dotenv
 from datetime import datetime, timezone
 from twitchio.ext import commands
 from twitchio.ext.commands.errors import (
@@ -7,6 +8,8 @@ from twitchio.ext.commands.errors import (
     CommandNotFound,
     MissingRequiredArgument,
 )
+
+load_dotenv()
 
 TOKEN: str = os.getenv(key="TOKEN")
 COGS = ["points", "repost", "art", "codes"]
