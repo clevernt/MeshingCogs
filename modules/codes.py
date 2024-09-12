@@ -1,10 +1,8 @@
 import requests
 from twitchio.ext import commands
 
-games_dict = {
-    "genshin": "genshin",
-    "hsr": "hkrpg"
-}
+games_dict = {"genshin": "genshin", "hsr": "hkrpg"}
+
 
 class Codes(commands.Cog):
     def __init__(self, bot):
@@ -24,20 +22,23 @@ class Codes(commands.Cog):
             )
             return
 
-        resp = requests.get(f"https://hoyo-codes.seriaati.xyz/codes?game={games_dict.get(game.lower())}")
+        resp = requests.get(
+            f"https://hoyo-codes.seria.moe/codes?game={games_dict.get(game.lower())}"
+        )
         if resp.status_code != 200:
             await ctx.send(f"/me @{ctx.author.name} -> Failed to fetch codes.")
             return
 
         data = resp.json()
-        codes = ', '.join(code.get('code') for code in data.get('codes', []))
+        codes = ", ".join(code.get("code") for code in data.get("codes", []))
         if not codes:
-            await ctx.send(f"/me @{ctx.author.name} -> No valid codes found for {game}.")
+            await ctx.send(
+                f"/me @{ctx.author.name} -> No valid codes found for {game}."
+            )
             return
 
-        await ctx.reply(
-            f"/me @{ctx.author.name} -> All valid {game} codes: {codes}"
-        )
+        await ctx.reply(f"/me @{ctx.author.name} -> All valid {game} codes: {codes}")
+
 
 def prepare(bot: commands.Bot):
     bot.add_cog(Codes(bot))
