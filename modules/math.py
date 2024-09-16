@@ -7,7 +7,7 @@ class Math(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def math(self, ctx: commands.Context, expression: str) -> None:
+    async def math(self, ctx: commands.Context, *, expression: str) -> None:
         result = sp.sympify(expression)
         await ctx.send(f"/me @{ctx.author.name} -> {result}")
 
