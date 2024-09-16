@@ -37,7 +37,7 @@ class Codes(commands.Cog):
             )
             return
 
-        await ctx.reply(f"/me @{ctx.author.name} -> All valid {game} codes: {codes}")
+        await ctx.send(f"/me @{ctx.author.name} -> All valid {game} codes: {codes}")
 
 
 def prepare(bot: commands.Bot):

@@ -58,7 +58,7 @@ class Art(commands.Cog):
         self.database.add_characters(
             characters.replace(",", "").split(), ctx.author.id, ctx.author.name
         )
-        await ctx.reply(f"/me {ctx.author.name} -> Updated your characters.")
+        await ctx.send(f"/me {ctx.author.name} -> Updated your characters.")
 
     @commands.command(
         name="removecharacter",
@@ -70,7 +70,7 @@ class Art(commands.Cog):
         self.database.remove_characters(
             characters.replace(",", "").split(), ctx.author.id, ctx.author.name
         )
-        await ctx.reply(f"/me {ctx.author.name} -> Updated your characters.")
+        await ctx.send(f"/me {ctx.author.name} -> Updated your characters.")
 
     @commands.command(name="characters")
     async def get_characters(
@@ -89,21 +89,21 @@ class Art(commands.Cog):
 
         if not characters:
             if target_user:
-                await ctx.reply(
+                await ctx.send(
                     f"/me @{ctx.author.name} -> {target_user.name} has no characters added."
                 )
             else:
-                await ctx.reply(
+                await ctx.send(
                     f"/me @{ctx.author.name} -> You don't have characters added."
                 )
             return
 
         if target_user:
-            await ctx.reply(
+            await ctx.send(
                 f"/me @{ctx.author.name} -> {target_user.name}'s characters: {', '.join(characters)}"
             )
         else:
-            await ctx.reply(
+            await ctx.send(
                 f"/me @{ctx.author.name} -> Your characters: {', '.join(characters)}"
             )
 
