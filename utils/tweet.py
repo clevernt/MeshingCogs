@@ -1,6 +1,8 @@
 import re
 
-regex = r"https?://(?:twitter|X|vxtwitter|fxtwitter)\.com/[A-Za-z0-9_]+/status/(\d+)"
+regex = (
+    r"https?://(?:twitter|X|vxtwitter|fxtwitter|fixupx)\.com/[A-Za-z0-9_]+/status/(\d+)"
+)
 
 
 def find_tweet(message: str):

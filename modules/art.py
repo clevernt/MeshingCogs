@@ -1,6 +1,6 @@
 import twitchio
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 
 from twitchio.ext import commands
 from utils.tweet import get_tweet_id, get_tweet_link
@@ -32,7 +32,10 @@ class Art(commands.Cog):
 
         if tweet_link and tweet_id:
             timestamp = self.database.get_tweet_timestamp(tweet_id)
-            if not timestamp or (datetime.now() - timestamp).total_seconds() <= 10:
+            if (
+                not timestamp
+                or (datetime.now(tz=timezone.utc) - timestamp).total_seconds() <= 10
+            ):
                 askers = [
                     user
                     for mention in mentions

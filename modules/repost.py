@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import twitchio
 
 from twitchio.ext import commands
@@ -37,11 +38,27 @@ class Repost(commands.Cog):
                 int(message.author.id), message.author.name
             )
 
-            blame_message = f"blame_{original_poster.name}" if original_poster else ""
+            timestamp = self.database.get_tweet_timestamp(tweet_id)
+            now = datetime.now(tz=timezone.utc)
+            diff = now - timestamp
+
+            seconds = diff.total_seconds()
+            minutes = seconds // 60
+            hours = minutes // 60
+            days = hours // 24
+
+            if minutes < 1:
+                timestamp = "just now"
+            elif minutes < 60:
+                timestamp = f"{int(minutes)} minute(s) ago"
+            elif hours < 24:
+                timestamp = f"{int(hours)} hour(s) ago"
+            else:
+                timestamp = f"{int(days)} day(s) ago"
+
             await message.channel.send(
-                f"/me {message.author.mention} -> ⚠️🚨 REPOST DETECTED!!! ({blame_message}) "
-                "YOU HAVE BEEN REPORTED TO THE HIGHER-UPS (WHO DON'T EXIST) "
-                f"AND YOU NOW HAVE {points} POINTS"
+                f"/me {message.author.mention} -> ⚠️🚨 REPOST DETECTED!!! This was posted {timestamp} by {original_poster.name}. "
+                f"You now have {points} points."
             )
         else:
             self.database.add_tweet(
