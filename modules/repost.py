@@ -57,7 +57,7 @@ class Repost(commands.Cog):
                 timestamp = f"{int(days)} day(s) ago"
 
             await message.channel.send(
-                f"/me {message.author.mention} -> ⚠️🚨 REPOST DETECTED!!! This was posted {timestamp} by {original_poster.name}. "
+                f"/me {message.author.mention} -> ⚠️🚨 REPOST DETECTED!!! This was posted {timestamp} by_{original_poster.name}. "
                 f"You now have {points} points."
             )
         else:
