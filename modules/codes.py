@@ -1,4 +1,6 @@
 import requests
+import re
+
 from twitchio.ext import commands
 
 games_dict = {"genshin": "genshin", "hsr": "hkrpg"}
@@ -30,14 +32,23 @@ class Codes(commands.Cog):
             return
 
         data = resp.json()
-        codes = ", ".join(code.get("code") for code in data.get("codes", []))
-        if not codes:
-            await ctx.send(
-                f"/me @{ctx.author.name} -> No valid codes found for {game}."
+        codes = [
+            code["code"]
+            for code in data["codes"]
+            if re.search(
+                r"\b(primogem|primogems|stellar jade|stellar jades)\b",
+                code["rewards"],
+                re.IGNORECASE,
             )
+        ]
+
+        if not codes:
+            await ctx.send(f"/me @{ctx.author.name} -> No codes found for {game}.")
             return
 
-        await ctx.send(f"/me @{ctx.author.name} -> All valid {game} codes: {codes}")
+        await ctx.send(
+            f"/me @{ctx.author.name} -> All active {game} codes: {" ".join(codes)}"
+        )
 
 
 def prepare(bot: commands.Bot):
