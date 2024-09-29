@@ -3,7 +3,11 @@ import re
 
 from twitchio.ext import commands
 
-games_dict = {"genshin": "genshin", "hsr": "hkrpg"}
+games_dict = {
+    "genshin": "genshin",
+    "hsr": "hkrpg",
+    "zzz": "nap",
+}
 
 
 class Codes(commands.Cog):
@@ -14,13 +18,13 @@ class Codes(commands.Cog):
     async def codes(self, ctx: commands.Context, game: str = None) -> None:
         if game is None:
             await ctx.send(
-                f"/me @{ctx.author.name} -> Please specify a game (Genshin or HSR)"
+                f"/me @{ctx.author.name} -> Please specify a game (genshin, hsr, or zzz)"
             )
             return
 
-        if game.lower() not in ["genshin", "hsr"]:
+        if game.lower() not in ["genshin", "hsr", "zzz"]:
             await ctx.send(
-                f"/me @{ctx.author.name} -> Please specify a valid game (Genshin or HSR)"
+                f"/me @{ctx.author.name} -> Please specify a valid game (genshin, hsr, or zzz)"
             )
             return
 
@@ -36,7 +40,7 @@ class Codes(commands.Cog):
             code["code"]
             for code in data["codes"]
             if re.search(
-                r"\b(primogem|primogems|stellar jade|stellar jades)\b",
+                r"\b(primogem|primogems|stellar jade|stellar jades|polychrome|polychromes)\b",
                 code["rewards"],
                 re.IGNORECASE,
             )
