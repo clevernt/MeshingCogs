@@ -50,9 +50,7 @@ class Codes(commands.Cog):
             await ctx.send(f"/me @{ctx.author.name} -> No codes found for {game}.")
             return
 
-        await ctx.send(
-            f"/me @{ctx.author.name} -> All active {game} codes: {" ".join(codes)}"
-        )
+        await ctx.send(f"/me @{ctx.author.name} -> {" ".join(codes)}")
 
 
 def prepare(bot: commands.Bot):
