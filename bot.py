@@ -12,7 +12,7 @@ from twitchio.ext.commands.errors import (
 load_dotenv()
 
 TOKEN: str = os.getenv(key="TOKEN")
-COGS = ["points", "repost", "art", "codes", "math"]
+COGS = ["points", "repost", "art", "codes", "wa"]
 
 
 class MyBot(commands.Bot):
