@@ -14,7 +14,7 @@ class WolframAlpha(commands.Cog):
     async def query_wolfram(self, query: str) -> str | None:
         try:
             response = await asyncio.to_thread(wolfram_client.query, query)
-            answer = next(response.results).text
+            answer = response.results.text[500:]
             return answer
         except Exception as e:
             print(e)
